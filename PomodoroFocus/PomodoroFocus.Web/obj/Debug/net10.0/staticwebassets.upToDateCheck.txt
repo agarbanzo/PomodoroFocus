@@ -1,0 +1,3 @@
+wwwroot\css\app.css
+wwwroot\icon-192.png
+C:\Users\Andrey Garbanzo\Proyectos2026\PomodoroFocus\PomodoroFocus\PomodoroFocus.Web\wwwroot\css\app.css

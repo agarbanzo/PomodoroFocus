@@ -1,0 +1,12 @@
+C:\Users\Andrey Garbanzo\Proyectos2026\PomodoroFocus\PomodoroFocus\PomodoroFocus.Infrastructure\bin\Debug\net10.0\PomodoroFocus.Infrastructure.deps.json
+C:\Users\Andrey Garbanzo\Proyectos2026\PomodoroFocus\PomodoroFocus\PomodoroFocus.Infrastructure\bin\Debug\net10.0\PomodoroFocus.Infrastructure.dll
+C:\Users\Andrey Garbanzo\Proyectos2026\PomodoroFocus\PomodoroFocus\PomodoroFocus.Infrastructure\bin\Debug\net10.0\PomodoroFocus.Infrastructure.pdb
+C:\Users\Andrey Garbanzo\Proyectos2026\PomodoroFocus\PomodoroFocus\PomodoroFocus.Infrastructure\obj\Debug\net10.0\PomodoroFocus.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Andrey Garbanzo\Proyectos2026\PomodoroFocus\PomodoroFocus\PomodoroFocus.Infrastructure\obj\Debug\net10.0\PomodoroFocus.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\Andrey Garbanzo\Proyectos2026\PomodoroFocus\PomodoroFocus\PomodoroFocus.Infrastructure\obj\Debug\net10.0\PomodoroFocus.Infrastructure.AssemblyInfo.cs
+C:\Users\Andrey Garbanzo\Proyectos2026\PomodoroFocus\PomodoroFocus\PomodoroFocus.Infrastructure\obj\Debug\net10.0\PomodoroFocus.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\Andrey Garbanzo\Proyectos2026\PomodoroFocus\PomodoroFocus\PomodoroFocus.Infrastructure\obj\Debug\net10.0\PomodoroFocus.Infrastructure.sourcelink.json
+C:\Users\Andrey Garbanzo\Proyectos2026\PomodoroFocus\PomodoroFocus\PomodoroFocus.Infrastructure\obj\Debug\net10.0\PomodoroFocus.Infrastructure.dll
+C:\Users\Andrey Garbanzo\Proyectos2026\PomodoroFocus\PomodoroFocus\PomodoroFocus.Infrastructure\obj\Debug\net10.0\refint\PomodoroFocus.Infrastructure.dll
+C:\Users\Andrey Garbanzo\Proyectos2026\PomodoroFocus\PomodoroFocus\PomodoroFocus.Infrastructure\obj\Debug\net10.0\PomodoroFocus.Infrastructure.pdb
+C:\Users\Andrey Garbanzo\Proyectos2026\PomodoroFocus\PomodoroFocus\PomodoroFocus.Infrastructure\obj\Debug\net10.0\ref\PomodoroFocus.Infrastructure.dll
