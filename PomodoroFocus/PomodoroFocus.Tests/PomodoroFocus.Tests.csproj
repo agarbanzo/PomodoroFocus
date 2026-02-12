@@ -17,6 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PomodoroFocus.Application\PomodoroFocus.Application.csproj" />
+    <ProjectReference Include="..\PomodoroFocus.Domain\PomodoroFocus.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="NUnit.Framework" />
   </ItemGroup>
 
