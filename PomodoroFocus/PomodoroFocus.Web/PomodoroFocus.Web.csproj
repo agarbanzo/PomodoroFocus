@@ -17,4 +17,8 @@
     <ProjectReference Include="..\PomodoroFocus.Infrastructure\PomodoroFocus.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Components\" />
+  </ItemGroup>
+
 </Project>
