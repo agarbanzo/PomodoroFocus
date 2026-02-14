@@ -80,8 +80,7 @@ public class PomodoroService : IPomodoroService, IDisposable
             ? _config.LongBreakDuration
             : _config.ShortBreakDuration;
 
-        _session.StartBreak(breakType);
-        _session.Start(duration);
+        _session.StartBreak(breakType, duration);
         _timer.Start();
     }
 

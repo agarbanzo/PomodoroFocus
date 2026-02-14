@@ -49,29 +49,41 @@ public class PomodoroSession
     /// <summary>
     /// Starts a new Pomodoro session with the specified duration in minutes.
     /// </summary>
-    /// <param name="durationInMinutes"></param>
+    /// <param name="durationInMinutes">The duration in minutes.</param>
     public void Start(int durationInMinutes)
     {
+        // Solo establecer como Pomodoro si no estamos en medio de un break
+        if (State != TimerState.Break)
+        {
+            CurrentSessionType = SessionType.Pomodoro;
+        }
+
         RemainingSeconds = durationInMinutes * 60;
         State = TimerState.Running;
     }
 
     /// <summary>
-    /// Pauses the timer if it is currently running.
+    /// Pauses the timer if it is currently running or in a break.
     /// </summary>
     public void Pause()
     {
-        if (State == TimerState.Running)
+        if (State == TimerState.Running || State == TimerState.Break)
             State = TimerState.Paused;
     }
 
     /// <summary>
-    /// Resumes the timer if it is currently paused.
+    /// Resumes the timer if it is currently paused, restoring it to the appropriate state based on the current session type.
     /// </summary>
     public void Resume()
     {
         if (State == TimerState.Paused)
-            State = TimerState.Running;
+        {
+            // If it was a Pomodoro, resume running;
+            // If it was a break, resume the break state.
+            State = CurrentSessionType == SessionType.Pomodoro
+                ? TimerState.Running
+                : TimerState.Break;
+        }
     }
 
     /// <summary>
@@ -79,9 +91,12 @@ public class PomodoroSession
     /// </summary>
     public void Tick()
     {
-        if (State == TimerState.Running && RemainingSeconds > 0)
+        if (State == TimerState.Running || State == TimerState.Break)
         {
-            RemainingSeconds--;
+            if (RemainingSeconds > 0)
+            {
+                RemainingSeconds--;
+            }
 
             if (RemainingSeconds == 0)
             {
@@ -112,13 +127,15 @@ public class PomodoroSession
     }
 
     /// <summary>
-    /// Starts a break session of the specified type (ShortBreak or LongBreak) and updates the state to Break.
+    /// Starts a break session of the specified type (ShortBreak or LongBreak) with the given duration and updates the state to Break.
     /// </summary>
-    /// <param name="breakType"></param>
-    public void StartBreak(SessionType breakType)
+    /// <param name="breakType">The type of break (ShortBreak or LongBreak)</param>
+    /// <param name="minutes">The duration of the break in minutes</param>
+    public void StartBreak(SessionType breakType, int minutes)
     {
         CurrentSessionType = breakType;
         State = TimerState.Break;
+        RemainingSeconds = minutes * 60;
     }
 
     /// <summary>
