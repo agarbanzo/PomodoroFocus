@@ -481,10 +481,11 @@ public class PomodoroSessionTests
 
     #region ResetAfterLongBreak Tests
     /// <summary>
-    /// Tests that resetting after a long break clears the CompletedPomodoros counter and resets the CurrentSessionType to Pomodoro,
+    /// Tests that resetting after a long break clears the CompletedPomodoros counter
+    /// but does NOT change the CurrentSessionType (we are still IN the long break).
     /// </summary>
     [Test]
-    public void ResetAfterLongBreak_ShouldClearCompletedPomodorosAndResetSessionType()
+    public void ResetAfterLongBreak_ShouldClearCompletedPomodorosButPreserveBreakType()
     {
         // Arrange
         _session.Start(25);
@@ -499,8 +500,10 @@ public class PomodoroSessionTests
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.That(_session.CompletedPomodoros, Is.EqualTo(0));
-            Assert.That(_session.CurrentSessionType, Is.EqualTo(SessionType.Pomodoro));
+            Assert.That(_session.CompletedPomodoros, Is.EqualTo(0),
+                "Counter should be reset");
+            Assert.That(_session.CurrentSessionType, Is.EqualTo(SessionType.LongBreak),
+                "Should still be in LongBreak session");
         });
     }
 
