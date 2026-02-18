@@ -278,7 +278,160 @@ public class PomodoroServiceTests
         });
     }
 
+    // ========== NUEVOS TESTS (ROBUSTEZ) ==========
+
+    [Test]
+    public void CancelAsCompleted_DuringBreak_ShouldNotIncrementCounter()
+    {
+        // Arrange
+        _service.StartPomodoro();
+        _service.CancelAsCompleted(); // CompletedPomodoros = 1
+        var countBeforeBreak = _service.CompletedPomodoros;
+
+        _service.StartBreak();
+
+        // Act
+        _service.CancelAsCompleted(); // Completar el break
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(_service.CompletedPomodoros, Is.EqualTo(countBeforeBreak),
+                "Counter should NOT increment when completing a break");
+            Assert.That(_service.CurrentState, Is.EqualTo(TimerState.Ready));
+        });
+    }
+
+    [Test]
+    public void CancelAsIncomplete_MultipleConsecutiveTimes_ShouldNeverIncrementCounter()
+    {
+        // Arrange & Act - Simulate user starting and abandoning multiple times
+        for (int i = 0; i < 5; i++)
+        {
+            _service.StartPomodoro();
+            Thread.Sleep(500); // Simulate some time running
+            _service.CancelAsIncomplete();
+        }
+
+        // Assert
+        Assert.That(_service.CompletedPomodoros, Is.EqualTo(0),
+            "Counter should remain 0 after multiple incomplete cancellations");
+    }
+
+    [Test]
+    public void CancelAsCompleted_FromPausedPomodoro_ShouldIncrementCounter()
+    {
+        // Arrange
+        _service.StartPomodoro();
+        _service.Pause();
+        var initialCount = _service.CompletedPomodoros;
+
+        // Act
+        _service.CancelAsCompleted();
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(_service.CompletedPomodoros, Is.EqualTo(initialCount + 1),
+                "Should count as completed even when cancelled from paused state");
+            Assert.That(_service.CurrentState, Is.EqualTo(TimerState.Ready));
+        });
+    }
+
+    [Test]
+    public void CancelAsIncomplete_FromPausedPomodoro_ShouldNotIncrementCounter()
+    {
+        // Arrange
+        _service.StartPomodoro();
+        _service.Pause();
+
+        // Act
+        _service.CancelAsIncomplete();
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(_service.CompletedPomodoros, Is.EqualTo(0),
+                "Should NOT count when cancelled as incomplete from paused state");
+            Assert.That(_service.CurrentState, Is.EqualTo(TimerState.Ready));
+        });
+    }
+
+    [Test]
+    public void MixedCancellations_ShouldOnlyCountCompleted()
+    {
+        // Arrange & Act
+        _service.StartPomodoro();
+        _service.CancelAsCompleted(); // +1 → Count = 1
+
+        _service.StartPomodoro();
+        _service.CancelAsIncomplete(); // +0 → Count = 1
+
+        _service.StartPomodoro();
+        _service.Pause();
+        _service.CancelAsCompleted(); // +1 → Count = 2
+
+        _service.StartPomodoro();
+        _service.CancelAsIncomplete(); // +0 → Count = 2
+
+        // Assert
+        Assert.That(_service.CompletedPomodoros, Is.EqualTo(2),
+            "Only completed cancellations (not incomplete) should increment counter");
+    }
+
+    [Test]
+    public void CancelAsCompleted_DuringLongBreak_ShouldNotIncrementCounter()
+    {
+        // Arrange - Complete 4 Pomodoros to trigger long break
+        for (int i = 0; i < 4; i++)
+        {
+            _service.StartPomodoro();
+            _service.CancelAsCompleted();
+        }
+
+        _service.StartBreak(); // Triggers long break and resets counter to 0
+        var countAfterLongBreakStarts = _service.CompletedPomodoros; // Should be 0 (reset after long break)
+
+        // Act
+        _service.CancelAsCompleted(); // Complete the long break
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(_service.CompletedPomodoros, Is.EqualTo(countAfterLongBreakStarts),
+                "Counter should NOT increment when completing a long break");
+            Assert.That(_service.CurrentState, Is.EqualTo(TimerState.Ready));
+        });
+    }
+
+    [Test]
+    public void CancelAsIncomplete_DuringLongBreak_ShouldNotIncrementCounter()
+    {
+        // Arrange - Complete 4 Pomodoros to trigger long break
+        for (int i = 0; i < 4; i++)
+        {
+            _service.StartPomodoro();
+            _service.CancelAsCompleted();
+        }
+
+        _service.StartBreak(); // Triggers long break and resets counter to 0
+        var countAfterLongBreakStarts = _service.CompletedPomodoros; // Should be 0
+
+        // Act
+        _service.CancelAsIncomplete(); // Cancel the long break incomplete
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(_service.CompletedPomodoros, Is.EqualTo(countAfterLongBreakStarts),
+                "Counter should NOT change when cancelling break incomplete");
+            Assert.That(_service.CurrentState, Is.EqualTo(TimerState.Ready));
+            Assert.That(_service.RemainingSeconds, Is.EqualTo(0));
+        });
+    }
+
     #endregion
+
 
     #region Event Tests
 
