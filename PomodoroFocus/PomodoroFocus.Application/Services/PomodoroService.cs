@@ -68,11 +68,15 @@ public class PomodoroService : IPomodoroService, IDisposable
     }
 
     /// <summary>
-    /// Starts a break session, determining whether it should be a short break or a long break based on the number of completed Pomodoros and the configured thresholds.
+    /// Starts a break session, determining whether it should be a short break or a long break 
+    /// based on the number of completed Pomodoros and the configured thresholds.
+    /// If starting a long break, resets the Pomodoro counter.
     /// </summary>
     public void StartBreak()
     {
-        var breakType = _session.CompletedPomodoros % _config.PomodorosBeforeLongBreak == 0
+        // Determine break type: Long break after every N Pomodoros, otherwise short
+        var breakType = _session.CompletedPomodoros > 0
+            && _session.CompletedPomodoros % _config.PomodorosBeforeLongBreak == 0
             ? SessionType.LongBreak
             : SessionType.ShortBreak;
 
@@ -82,6 +86,12 @@ public class PomodoroService : IPomodoroService, IDisposable
 
         _session.StartBreak(breakType, duration);
         _timer.Start();
+
+        // Reset counter after starting long break
+        if (breakType == SessionType.LongBreak)
+        {
+            _session.ResetAfterLongBreak();
+        }
     }
 
     /// <summary>

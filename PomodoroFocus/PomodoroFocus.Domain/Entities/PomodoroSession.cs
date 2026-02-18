@@ -139,11 +139,12 @@ public class PomodoroSession
     }
 
     /// <summary>
-    /// Resets the session after a long break, clearing the count of completed Pomodoros and setting the session type back to Pomodoro.
+    /// Resets the Pomodoro counter after starting a long break.
+    /// The counter is cleared to begin a new cycle after the long break completes.
     /// </summary>
     public void ResetAfterLongBreak()
     {
         CompletedPomodoros = 0;
-        CurrentSessionType = SessionType.Pomodoro;
+        // DO NOT change CurrentSessionType here - we are IN a long break session
     }
 }
