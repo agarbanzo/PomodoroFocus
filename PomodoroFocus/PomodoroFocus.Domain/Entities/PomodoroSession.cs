@@ -118,6 +118,16 @@ public class PomodoroSession
     }
 
     /// <summary>
+    /// Completes the current break session and returns to Ready state
+    /// </summary>
+    public void CompleteBreak()
+    {
+        State = TimerState.Ready;
+        RemainingSeconds = 0;
+    }
+
+
+    /// <summary>
     /// Cancels the current session, resetting the state to Ready and clearing the remaining seconds.
     /// </summary>
     public void Cancel()

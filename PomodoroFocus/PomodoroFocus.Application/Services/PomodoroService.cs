@@ -118,16 +118,34 @@ public class PomodoroService : IPomodoroService, IDisposable
     public void CancelAsCompleted()
     {
         _timer.Stop();
-        _session.CompletePomodoro();
+
+        // Solo incrementar contador si es un Pomodoro
+        if (_session.CurrentSessionType == SessionType.Pomodoro)
+        {
+            _session.CompletePomodoro();
+        }
+        else
+        {
+            // Si es un break, solo cambiar a Ready sin incrementar
+            _session.CompleteBreak();
+        }
     }
 
     /// <summary>
-    /// Cancels the current session and resets the timer to its initial state, allowing the user to start fresh without marking the session as completed.
+    /// Cancels the current session without marking it as completed, stopping the timer and resetting the session.
     /// </summary>
     public void CancelAsIncomplete()
     {
         _timer.Stop();
-        _session.Cancel();
+
+        if (_session.CurrentSessionType == SessionType.Pomodoro)
+        {
+            _session.Cancel(); // Reset Pomodoro
+        }
+        else
+        {
+            _session.CompleteBreak(); // Reset Break to Ready
+        }
     }
 
     /// <summary>
