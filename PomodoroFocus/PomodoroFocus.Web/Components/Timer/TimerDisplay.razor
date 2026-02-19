@@ -24,29 +24,20 @@
         </div>
     </div>
 
-    <div class="timer-controls">
-        @if (State == TimerState.Initial)
-        {
-            <button class="btn-primary" @onclick="StartTimer">Iniciar Pomodoro</button>
-        }
-        else if (State == TimerState.Running)
-        {
-            <button class="btn-secondary" @onclick="PauseTimer">Pausar</button>
-            <button class="btn-danger" @onclick="CancelTimer">Cancelar</button>
-        }
-        else if (State == TimerState.Paused)
-        {
-            <button class="btn-primary" @onclick="ResumeTimer">Reanudar</button>
-            <button class="btn-danger" @onclick="CancelTimer">Cancelar</button>
-        }
+    <div class="timer-controls-wrapper">
+        <TimerControls State="@State"
+                       OnStart="StartTimer"
+                       OnPause="PauseTimer"
+                       OnResume="ResumeTimer"
+                       OnCancel="CancelTimer" />
     </div>
 </div>
 
-@code {
-    public enum TimerState { Initial, Running, Paused }
+@using PomodoroFocus.Domain.Enums
 
+@code {
     [Parameter] public TimeSpan TimeRemaining { get; set; } = TimeSpan.FromMinutes(25);
-    [Parameter] public TimerState State { get; set; } = TimerState.Initial;
+    [Parameter] public TimerState State { get; set; } = TimerState.Ready;
     
     // Total duration for progress calculation (mock default 25m)
     private TimeSpan TotalDuration = TimeSpan.FromMinutes(25);
@@ -71,7 +62,7 @@
             else
             {
                 _timer?.Stop();
-                State = TimerState.Initial; // Reset for demo
+                State = TimerState.Ready; // Reset for demo
                 await InvokeAsync(StateHasChanged);
             }
         };
@@ -92,7 +83,7 @@
 
     private void CancelTimer()
     {
-        State = TimerState.Initial;
+        State = TimerState.Ready;
         _timer?.Stop();
         TimeRemaining = TotalDuration;
     }
