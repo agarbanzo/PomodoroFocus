@@ -29,8 +29,14 @@
                        OnStart="StartTimer"
                        OnPause="PauseTimer"
                        OnResume="ResumeTimer"
-                       OnCancel="CancelTimer" />
+                       OnCancel="RequestCancel" />
     </div>
+    
+    <PomodoroFocus.Web.Components.Modals.CancelConfirmModal 
+        IsVisible="@ShowCancelModal"
+        OnClose="@(() => ShowCancelModal = false)"
+        OnConfirmCompleted="HandleCompleted"
+        OnConfirmNotCompleted="HandleNotCompleted" />
 </div>
 
 @using PomodoroFocus.Domain.Enums
@@ -39,6 +45,8 @@
     [Parameter] public TimeSpan TimeRemaining { get; set; } = TimeSpan.FromMinutes(25);
     [Parameter] public TimerState State { get; set; } = TimerState.Ready;
     
+    private bool ShowCancelModal { get; set; } = false;
+
     // Total duration for progress calculation (mock default 25m)
     private TimeSpan TotalDuration = TimeSpan.FromMinutes(25);
     private double Circumference = 2 * Math.PI * 140; 
@@ -81,7 +89,27 @@
         _timer?.Start();
     }
 
-    private void CancelTimer()
+    private void RequestCancel()
+    {
+        // Pause timer while modal is open (optional, but good UX)
+        if (State == TimerState.Running) PauseTimer();
+        ShowCancelModal = true;
+    }
+
+    private void HandleCompleted()
+    {
+        ShowCancelModal = false;
+        ResetTimer();
+        // TODO: Increment completed count
+    }
+
+    private void HandleNotCompleted()
+    {
+        ShowCancelModal = false;
+        ResetTimer();
+    }
+
+    private void ResetTimer()
     {
         State = TimerState.Ready;
         _timer?.Stop();

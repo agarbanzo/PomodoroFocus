@@ -2,29 +2,20 @@
 @using PomodoroFocus.Domain.Enums
 
 <div class="timer-controls">
-    @if (IsConfirmingCancel)
+    @switch (State)
     {
-        <span class="confirm-text">¿Estás seguro?</span>
-        <button class="btn-primary btn-confirm" @onclick="ConfirmCancel">Sí, cancelar</button>
-        <button class="btn-secondary btn-back" @onclick="AbortCancel">No, volver</button>
-    }
-    else
-    {
-        @switch (State)
-        {
-            case TimerState.Ready:
-                <button class="btn-primary start-btn" @onclick="OnStart">Iniciar Pomodoro</button>
-                break;
-            case TimerState.Running:
-            case TimerState.Break:
-                <button class="btn-secondary" @onclick="OnPause">Pausar</button>
-                <button class="btn-danger" @onclick="RequestCancel">Cancelar</button>
-                break;
-            case TimerState.Paused:
-                <button class="btn-primary" @onclick="OnResume">Reanudar</button>
-                <button class="btn-danger" @onclick="RequestCancel">Cancelar</button>
-                break;
-        }
+        case TimerState.Ready:
+            <button class="btn-primary start-btn" @onclick="OnStart">Iniciar Pomodoro</button>
+            break;
+        case TimerState.Running:
+        case TimerState.Break:
+            <button class="btn-secondary" @onclick="OnPause">Pausar</button>
+            <button class="btn-danger" @onclick="OnCancel">Cancelar</button>
+            break;
+        case TimerState.Paused:
+            <button class="btn-primary" @onclick="OnResume">Reanudar</button>
+            <button class="btn-danger" @onclick="OnCancel">Cancelar</button>
+            break;
     }
 </div>
 
@@ -34,25 +25,4 @@
     [Parameter] public EventCallback OnPause { get; set; }
     [Parameter] public EventCallback OnResume { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
-
-    private bool IsConfirmingCancel { get; set; } = false;
-
-    private void RequestCancel()
-    {
-        IsConfirmingCancel = true;
-    }
-
-    private void AbortCancel()
-    {
-        IsConfirmingCancel = false;
-    }
-
-    private async Task ConfirmCancel()
-    {
-        IsConfirmingCancel = false;
-        if (OnCancel.HasDelegate)
-        {
-            await OnCancel.InvokeAsync();
-        }
-    }
 }

@@ -1,0 +1,19 @@
+<div class="modal-backdrop @(IsVisible ? "visible" : "")">
+    <div class="modal-card">
+        <button class="close-btn" @onclick="OnClose">×</button>
+        <h3>Finalizar Pomodoro</h3>
+        <p>¿Deseas registrar esta sesión como completada?</p>
+        
+        <div class="modal-actions">
+            <button class="btn-primary" @onclick="OnConfirmCompleted">Sí, marcar como completado</button>
+            <button class="btn-secondary" @onclick="OnConfirmNotCompleted">No, descartar sesión</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnConfirmCompleted { get; set; }
+    [Parameter] public EventCallback OnConfirmNotCompleted { get; set; }
+}
