@@ -1,0 +1,104 @@
+@using System.Timers
+
+<div class="timer-container">
+    <div class="timer-circle">
+        <svg class="progress-ring" viewBox="0 0 300 300" width="100%" height="100%">
+            <circle class="progress-ring__circle-bg"
+                    stroke="rgba(0,0,0,0.05)"
+                    stroke-width="12"
+                    fill="transparent"
+                    r="140"
+                    cx="150"
+                    cy="150" />
+            <circle class="progress-ring__circle"
+                    stroke="var(--pomodoro-color, #E55039)"
+                    stroke-width="12"
+                    fill="transparent"
+                    r="140"
+                    cx="150"
+                    cy="150"
+                    style="stroke-dasharray: @Circumference @Circumference; stroke-dashoffset: @DashOffset" />
+        </svg>
+        <div class="timer-text">
+            @FormatTime(TimeRemaining)
+        </div>
+    </div>
+
+    <div class="timer-controls">
+        @if (State == TimerState.Initial)
+        {
+            <button class="btn-primary" @onclick="StartTimer">Iniciar Pomodoro</button>
+        }
+        else if (State == TimerState.Running)
+        {
+            <button class="btn-secondary" @onclick="PauseTimer">Pausar</button>
+            <button class="btn-danger" @onclick="CancelTimer">Cancelar</button>
+        }
+        else if (State == TimerState.Paused)
+        {
+            <button class="btn-primary" @onclick="ResumeTimer">Reanudar</button>
+            <button class="btn-danger" @onclick="CancelTimer">Cancelar</button>
+        }
+    </div>
+</div>
+
+@code {
+    public enum TimerState { Initial, Running, Paused }
+
+    [Parameter] public TimeSpan TimeRemaining { get; set; } = TimeSpan.FromMinutes(25);
+    [Parameter] public TimerState State { get; set; } = TimerState.Initial;
+    
+    // Total duration for progress calculation (mock default 25m)
+    private TimeSpan TotalDuration = TimeSpan.FromMinutes(25);
+    private double Circumference = 2 * Math.PI * 140; 
+    private double DashOffset => Circumference - (TimeRemaining.TotalSeconds / TotalDuration.TotalSeconds) * Circumference;
+
+    private Timer? _timer;
+
+    private string FormatTime(TimeSpan time) => $"{(int)time.TotalMinutes:D2}:{time.Seconds:D2}";
+
+    private void StartTimer()
+    {
+        State = TimerState.Running;
+        _timer = new Timer(1000);
+        _timer.Elapsed += async (sender, e) => 
+        {
+            if (TimeRemaining.TotalSeconds > 0)
+            {
+                TimeRemaining = TimeRemaining.Subtract(TimeSpan.FromSeconds(1));
+                await InvokeAsync(StateHasChanged);
+            }
+            else
+            {
+                _timer?.Stop();
+                State = TimerState.Initial; // Reset for demo
+                await InvokeAsync(StateHasChanged);
+            }
+        };
+        _timer.Start();
+    }
+
+    private void PauseTimer()
+    {
+        State = TimerState.Paused;
+        _timer?.Stop();
+    }
+
+    private void ResumeTimer()
+    {
+        State = TimerState.Running;
+        _timer?.Start();
+    }
+
+    private void CancelTimer()
+    {
+        State = TimerState.Initial;
+        _timer?.Stop();
+        TimeRemaining = TotalDuration;
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+}
