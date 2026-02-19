@@ -123,11 +123,18 @@ public class PomodoroService : IPomodoroService, IDisposable
         if (_session.CurrentSessionType == SessionType.Pomodoro)
         {
             _session.CompletePomodoro();
+            OnSessionComplete?.Invoke(); // Notify UI
         }
         else
         {
             // Si es un break, solo cambiar a Ready sin incrementar
             _session.CompleteBreak();
+            // Should we fire OnSessionComplete for break? 
+            // Usually breaks just "end". But if we want to play sound or update UI state, maybe yes.
+            // But UC says "Mark as Completed" usually applies to Work. 
+            // If I cancel a break "as completed"... effectively I skipped it?
+            // Let's fire it to be safe for UI updates.
+            OnSessionComplete?.Invoke();
         }
     }
 

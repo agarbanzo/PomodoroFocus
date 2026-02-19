@@ -1,32 +1,27 @@
 @using System.Timers
 
-<div class="timer-container">
-    <div class="timer-circle">
-        <svg class="progress-ring" viewBox="0 0 300 300" width="100%" height="100%">
-            <circle class="progress-ring__circle-bg"
-                    stroke="rgba(0,0,0,0.05)"
-                    stroke-width="12"
-                    fill="transparent"
-                    r="140"
-                    cx="150"
-                    cy="150" />
-            <circle class="progress-ring__circle"
-                    stroke="var(--pomodoro-color, #E55039)"
-                    stroke-width="12"
-                    fill="transparent"
-                    r="140"
-                    cx="150"
-                    cy="150"
-                    style="stroke-dasharray: @Circumference @Circumference; stroke-dashoffset: @DashOffset" />
-        </svg>
-        <div class="timer-text">
-            @FormatTime(TimeRemaining)
+<div class="timer-display-root">
+    <div class="timer-container">
+        <!-- Main Timer Display Area -->
+        <div class="timer-visuals">
+            <!-- Background Image -->
+            <img src="@(TimerService.CurrentSessionType == SessionType.Pomodoro ? "images/pomodoro_focus.svg" : "images/break_chill.svg")" 
+                 alt="Timer Background" 
+                 class="timer-bg-image @(TimerService.CurrentState == TimerState.Running ? "pulsing" : "")" />
+            
+            <!-- Text Overlay -->
+            <div class="timer-text-overlay">
+                @FormatTime(TimerService.RemainingSeconds)
+            </div>
         </div>
     </div>
 
     <div class="timer-controls-wrapper">
-        <TimerControls State="@State"
+        <TimerControls State="@TimerService.CurrentState"
+                       CurrentSessionType="@TimerService.CurrentSessionType"
+                       CompletedPomodoros="@TimerService.CompletedPomodoros"
                        OnStart="StartTimer"
+                       OnStartBreak="@(() => TimerService.StartBreak())"
                        OnPause="PauseTimer"
                        OnResume="ResumeTimer"
                        OnCancel="RequestCancel" />
@@ -40,84 +35,88 @@
 </div>
 
 @using PomodoroFocus.Domain.Enums
+@using PomodoroFocus.Application.Interfaces
+@inject IPomodoroService TimerService
+@inject IJSRuntime JSRuntime
+@implements IDisposable
 
 @code {
-    [Parameter] public TimeSpan TimeRemaining { get; set; } = TimeSpan.FromMinutes(25);
-    [Parameter] public TimerState State { get; set; } = TimerState.Ready;
-    
+    // UI Local State for Modal
     private bool ShowCancelModal { get; set; } = false;
 
-    // Total duration for progress calculation (mock default 25m)
-    private TimeSpan TotalDuration = TimeSpan.FromMinutes(25);
-    private double Circumference = 2 * Math.PI * 140; 
-    private double DashOffset => Circumference - (TimeRemaining.TotalSeconds / TotalDuration.TotalSeconds) * Circumference;
-
-    private Timer? _timer;
-
-    private string FormatTime(TimeSpan time) => $"{(int)time.TotalMinutes:D2}:{time.Seconds:D2}";
-
-    private void StartTimer()
+    // Computed properties for UI
+    
+    // Note: Progress ring calculations removed as per design change.
+    
+    protected override void OnInitialized()
     {
-        State = TimerState.Running;
-        _timer = new Timer(1000);
-        _timer.Elapsed += async (sender, e) => 
-        {
-            if (TimeRemaining.TotalSeconds > 0)
-            {
-                TimeRemaining = TimeRemaining.Subtract(TimeSpan.FromSeconds(1));
-                await InvokeAsync(StateHasChanged);
-            }
-            else
-            {
-                _timer?.Stop();
-                State = TimerState.Ready; // Reset for demo
-                await InvokeAsync(StateHasChanged);
-            }
-        };
-        _timer.Start();
+        TimerService.OnTimerTick += HandleTimerTick;
+        TimerService.OnSessionComplete += HandleSessionComplete;
     }
 
-    private void PauseTimer()
+    private void HandleTimerTick()
     {
-        State = TimerState.Paused;
-        _timer?.Stop();
+        InvokeAsync(StateHasChanged);
     }
 
-    private void ResumeTimer()
+    private void HandleSessionComplete()
     {
-        State = TimerState.Running;
-        _timer?.Start();
+        // Play sound
+        JSRuntime.InvokeVoidAsync("playAudio", "alarm-sound");
+        
+        InvokeAsync(StateHasChanged);
     }
+
+    private string FormatTime(int totalSeconds)
+    {
+        var time = TimeSpan.FromSeconds(totalSeconds);
+        return $"{(int)time.TotalMinutes:D2}:{time.Seconds:D2}";
+    }
+
+    private void StartTimer() => TimerService.StartPomodoro();
+    
+    // For breaks, we need to know which one to start.
+    // However, the interface has StartBreak() which auto-decides (logic in service).
+    // But TimerControls might want to call StartPomodoro or StartBreak.
+    // If state is Ready, we need to know what to start.
+    
+    private void PauseTimer() => TimerService.Pause();
+
+    private void ResumeTimer() => TimerService.Resume();
 
     private void RequestCancel()
     {
-        // Pause timer while modal is open (optional, but good UX)
-        if (State == TimerState.Running) PauseTimer();
+        if (TimerService.CurrentState == TimerState.Running) TimerService.Pause();
         ShowCancelModal = true;
     }
 
     private void HandleCompleted()
     {
         ShowCancelModal = false;
-        ResetTimer();
-        // TODO: Increment completed count
+        TimerService.CancelAsCompleted();
     }
 
     private void HandleNotCompleted()
     {
         ShowCancelModal = false;
-        ResetTimer();
-    }
-
-    private void ResetTimer()
-    {
-        State = TimerState.Ready;
-        _timer?.Stop();
-        TimeRemaining = TotalDuration;
+        TimerService.CancelAsIncomplete();
     }
 
     public void Dispose()
     {
-        _timer?.Dispose();
+        TimerService.OnTimerTick -= HandleTimerTick;
+        TimerService.OnSessionComplete -= HandleSessionComplete;
     }
 }
+
+<audio id="alarm-sound" src="sounds/alarm.mp3" preload="auto"></audio>
+
+<script>
+    window.playAudio = (elementId) => {
+        var audio = document.getElementById(elementId);
+        if (audio) {
+            audio.currentTime = 0;
+            audio.play();
+        }
+    }
+</script>

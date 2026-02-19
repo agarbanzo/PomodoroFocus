@@ -1,0 +1,7 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <rect x="60" y="80" width="80" height="70" rx="10" ry="10" fill="#4682B4" /> <!-- Cup Body -->
+  <path d="M140 90 Q160 90 160 110 Q160 130 140 130" stroke="#4682B4" stroke-width="8" fill="none" /> <!-- Handle -->
+  <path d="M80 60 Q90 40 80 30" stroke="#CCC" stroke-width="4" fill="none" opacity="0.6"/> <!-- Steam 1 -->
+  <path d="M100 60 Q110 40 100 30" stroke="#CCC" stroke-width="4" fill="none" opacity="0.6"/> <!-- Steam 2 -->
+  <path d="M120 60 Q130 40 120 30" stroke="#CCC" stroke-width="4" fill="none" opacity="0.6"/> <!-- Steam 3 -->
+</svg>
