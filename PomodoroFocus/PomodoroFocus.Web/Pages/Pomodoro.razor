@@ -1,14 +1,57 @@
 @page "/"
 @page "/pomodoro"
 @using PomodoroFocus.Web.Components.Timer
+@using PomodoroFocus.Domain.Enums
+@inject PomodoroFocus.Application.Interfaces.IPomodoroService TimerService
 
-<PageTitle>Pomodoro Timer</PageTitle>
+<PageTitle>@TimeTitle</PageTitle>
 
 <div class="pomodoro-page-container">
     <div class="pomodoro-card">
-        <h1 class="text-center">Pomodoro Focus</h1>
+        <div class="cycle-indicators">
+            @for (int i = 0; i < 4; i++)
+            {
+                <span class="dot @(i < CompletedPomodorosInCycle ? "active" : "")"></span>
+            }
+        </div>
+        <h1 class="text-center">Pomodoro Focus!</h1>
         <TimerDisplay />
     </div>
 </div>
+
+@code {
+    private string TimeTitle => $"{(TimerService.CurrentState == TimerState.Running ? FormatTime(TimerService.RemainingSeconds) + " - " : "")}Pomodoro Focus!";
+    
+    // We need to listen to timer ticks to update the title
+    // But PageTitle updates automatically if the property changes? 
+    // We need to call StateHasChanged on this page too.
+    
+    // Also need to know "CompletedPomodorosInCycle".
+    // Service.CompletedPomodoros grows indefinitely. We want 0-3.
+    private int CompletedPomodorosInCycle => TimerService.CompletedPomodoros % 4;
+
+    private string FormatTime(int totalSeconds)
+    {
+        var time = TimeSpan.FromSeconds(totalSeconds);
+        return $"{(int)time.TotalMinutes:D2}:{time.Seconds:D2}";
+    }
+
+    protected override void OnInitialized()
+    {
+        TimerService.OnTimerTick += HandleTick;
+        TimerService.OnSessionComplete += HandleTick; // Update dots
+    }
+    
+    private void HandleTick()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        TimerService.OnTimerTick -= HandleTick;
+        TimerService.OnSessionComplete -= HandleTick;
+    }
+}
 
 

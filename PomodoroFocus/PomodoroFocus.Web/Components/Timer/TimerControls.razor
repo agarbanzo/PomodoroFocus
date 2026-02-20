@@ -5,8 +5,17 @@
     @switch (State)
     {
         case TimerState.Ready:
+        case TimerState.Completed:
             <button class="btn-primary start-btn" @onclick="OnStart">Iniciar Pomodoro</button>
+            
+            @if (CurrentSessionType == SessionType.Pomodoro && CompletedPomodoros > 0)
+            {
+                 var isLongBreak = CompletedPomodoros % 4 == 0;
+                 var breakLabel = isLongBreak ? "Iniciar Descanso Largo" : "Iniciar Descanso Corto";
+                 <button class="btn-secondary" @onclick="OnStartBreak">@breakLabel</button>
+            }
             break;
+            
         case TimerState.Running:
         case TimerState.Break:
             <button class="btn-secondary" @onclick="OnPause">Pausar</button>
@@ -21,7 +30,11 @@
 
 @code {
     [Parameter] public TimerState State { get; set; }
+    [Parameter] public SessionType CurrentSessionType { get; set; }
+    [Parameter] public int CompletedPomodoros { get; set; }
+    
     [Parameter] public EventCallback OnStart { get; set; }
+    [Parameter] public EventCallback OnStartBreak { get; set; } // New callback
     [Parameter] public EventCallback OnPause { get; set; }
     [Parameter] public EventCallback OnResume { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }

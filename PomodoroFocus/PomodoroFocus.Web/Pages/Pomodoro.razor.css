@@ -3,15 +3,17 @@
     justify-content: center;
     align-items: center;
     min-height: 80vh;
-    background-color: #FFEEEA;
-    /* Soft Tomato Background */
+    background-color: #fdf2f0;
+    /* Cleaner, fresher background */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background-color 0.5s ease;
 }
 
 .pomodoro-card {
     background: transparent;
     padding: 3rem;
-    border-radius: 20px;
+    border-radius: 30px;
+    /* Softer rounded corners */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -21,14 +23,36 @@
 
 h1 {
     margin-bottom: 2rem;
-    color: #8D2D1D;
-    /* Deep Burnt Red - High Contrast & Thematic */
-    font-size: 2.5rem;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    /* Reset any potential inherited borders or shadows */
+    color: #FF6347;
+    /* Energetic Tomato (Orange-Red) */
+    font-size: 3rem;
+    /* Larger */
+    font-weight: 900;
+    letter-spacing: -1px;
     text-shadow: none;
     -webkit-text-stroke: 0;
     border: none;
     outline: none;
+}
+
+/* Visual Cycle Indicators */
+.cycle-indicators {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.dot.active {
+    background-color: #FF6347;
+    /* Tomato */
+    box-shadow: 0 0 8px rgba(255, 99, 71, 0.4);
+    transform: scale(1.2);
 }
