@@ -5,9 +5,13 @@
         <!-- Main Timer Display Area -->
         <div class="timer-visuals">
             <!-- Background Image -->
-            <img src="@(TimerService.CurrentSessionType == SessionType.Pomodoro ? "images/pomodoro_focus.svg" : "images/break_chill.svg")" 
-                 alt="Timer Background" 
-                 class="timer-bg-image @(TimerService.CurrentState == TimerState.Running ? "pulsing" : "")" />
+            <img src="@(TimerService.CurrentSessionType == SessionType.Pomodoro
+                             ? "images/pomodoro_focus.svg" 
+                             : "images/break_chill.svg")"
+                 alt="Timer Background"
+                 class="timer-bg-image
+            @(TimerService.CurrentState == TimerState.Running ? "pulsing" : "")
+            @(TimerService.CurrentSessionType != SessionType.Pomodoro ? "break-image" : "")" />
             
             <!-- Text Overlay -->
             <div class="timer-text-overlay">

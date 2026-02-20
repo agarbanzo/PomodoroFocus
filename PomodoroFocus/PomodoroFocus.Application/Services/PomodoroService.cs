@@ -169,6 +169,16 @@ public class PomodoroService : IPomodoroService, IDisposable
         if (_session.State == TimerState.Completed)
         {
             _timer.Stop();
+
+            if (_session.CurrentSessionType == SessionType.Pomodoro)
+            {
+                _session.CompletePomodoro();
+            }
+            else
+            {
+                _session.CompleteBreak();
+            }
+
             OnSessionComplete?.Invoke();
         }
     }
