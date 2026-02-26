@@ -1,25 +1,26 @@
 @using System.Timers
+@using PomodoroFocus.Web.Components.Modals
 
 <div class="timer-display-root">
     <div class="timer-container">
         <!-- Main Timer Display Area -->
         <div class="timer-visuals">
-            <!-- Background Image -->
             <img src="@(TimerService.CurrentSessionType == SessionType.Pomodoro
-                             ? "images/pomodoro_focus.svg" 
+                             ? "images/pomodoro_focus.svg"
                              : "images/break_chill.svg")"
                  alt="Timer Background"
                  class="timer-bg-image
             @(TimerService.CurrentState == TimerState.Running ? "pulsing" : "")
             @(TimerService.CurrentSessionType != SessionType.Pomodoro ? "break-image" : "")" />
-            
-            <!-- Text Overlay -->
+
             <div class="timer-text-overlay">
                 @FormatTime(TimerService.RemainingSeconds)
             </div>
         </div>
     </div>
-
+    <!-- Modal de configuración UC-08 -->
+    <SettingsModal IsVisible="@ShowSettingsModal"
+                   OnClose="@(() => ShowSettingsModal = false)" />
     <div class="timer-controls-wrapper">
         <TimerControls State="@TimerService.CurrentState"
                        CurrentSessionType="@TimerService.CurrentSessionType"
@@ -30,12 +31,28 @@
                        OnResume="ResumeTimer"
                        OnCancel="RequestCancel" />
     </div>
-    
-    <PomodoroFocus.Web.Components.Modals.CancelConfirmModal 
+
+    <!-- UC-08: Botón de configuración — ahora aquí abajo -->
+    <div class="settings-action-wrapper">
+        <button class="btn-settings-link"
+                @onclick="OpenSettings"
+                disabled="@IsTimerActive"
+                title="@(IsTimerActive ? "Detén el timer para configurar" : "Configurar tiempos")">
+            ⚙️ Configurar tiempos
+        </button>
+    </div>
+
+    <!-- Modal: Cancelar sesión (existente) -->
+    <PomodoroFocus.Web.Components.Modals.CancelConfirmModal
         IsVisible="@ShowCancelModal"
         OnClose="@(() => ShowCancelModal = false)"
         OnConfirmCompleted="HandleCompleted"
         OnConfirmNotCompleted="HandleNotCompleted" />
+
+    <!-- Modal: Configuración UC-08 (nuevo) -->
+    <SettingsModal
+        IsVisible="@ShowSettingsModal"
+        OnClose="@(() => ShowSettingsModal = false)" />
 </div>
 
 @using PomodoroFocus.Domain.Enums
@@ -45,13 +62,16 @@
 @implements IDisposable
 
 @code {
-    // UI Local State for Modal
+    // UI Local State
     private bool ShowCancelModal { get; set; } = false;
+    private bool ShowSettingsModal { get; set; } = false; // UC-08
 
-    // Computed properties for UI
-    
-    // Note: Progress ring calculations removed as per design change.
-    
+    // Pre-condición UC-08: timer no debe estar activo
+    private bool IsTimerActive =>
+        TimerService.CurrentState == TimerState.Running ||
+        TimerService.CurrentState == TimerState.Break ||
+        TimerService.CurrentState == TimerState.Paused;
+
     protected override void OnInitialized()
     {
         TimerService.OnTimerTick += HandleTimerTick;
@@ -65,9 +85,7 @@
 
     private void HandleSessionComplete()
     {
-        // Play sound
         JSRuntime.InvokeVoidAsync("playAudio", "alarm-sound");
-        
         InvokeAsync(StateHasChanged);
     }
 
@@ -78,15 +96,15 @@
     }
 
     private void StartTimer() => TimerService.StartPomodoro();
-    
-    // For breaks, we need to know which one to start.
-    // However, the interface has StartBreak() which auto-decides (logic in service).
-    // But TimerControls might want to call StartPomodoro or StartBreak.
-    // If state is Ready, we need to know what to start.
-    
     private void PauseTimer() => TimerService.Pause();
-
     private void ResumeTimer() => TimerService.Resume();
+
+    // UC-08: Abrir settings
+    private void OpenSettings()
+    {
+        if (!IsTimerActive)
+            ShowSettingsModal = true;
+    }
 
     private void RequestCancel()
     {

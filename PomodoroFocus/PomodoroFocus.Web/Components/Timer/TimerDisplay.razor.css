@@ -131,3 +131,36 @@
     width: 100%; /* sin esto el wrapper mide lo mismo que el botón */
     margin-top: 0.5rem; /* pequeño respiro visual */
 }
+
+/* UC-08: Settings Action */
+.settings-action-wrapper {
+    margin-top: 1.2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-settings-link {
+    background: none;
+    border: none;
+    color: #95a5a6;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    letter-spacing: 0.02em;
+    transition: color 0.2s ease, background 0.2s ease;
+}
+
+.btn-settings-link:hover:not(:disabled) {
+    color: var(--pomodoro-color, #E55039);
+    background: rgba(229, 80, 57, 0.07);
+}
+
+.btn-settings-link:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}

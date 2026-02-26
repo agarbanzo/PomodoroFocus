@@ -1,0 +1,94 @@
+﻿@using PomodoroFocus.Domain.ValueObjects
+@using PomodoroFocus.Application.Interfaces
+@inject IPomodoroService TimerService
+
+<div class="modal-backdrop @(IsVisible ? "visible" : "")">
+    <div class="modal-card">
+
+        <button class="close-btn" @onclick="HandleClose">✕</button>
+
+        <h3>⚙️ Configurar Tiempos</h3>
+
+        <div class="settings-body">
+
+            <div class="setting-row">
+                <label for="pomodoro-duration">Duración Pomodoro</label>
+                <select id="pomodoro-duration" @bind="_pomodoroDuration">
+                    @foreach (var opt in PomodoroDurationOptions)
+                    {
+                        <option value="@opt">@opt min</option>
+                    }
+                </select>
+            </div>
+
+            <div class="setting-row">
+                <label for="short-break">Descanso Corto</label>
+                <select id="short-break" @bind="_shortBreakDuration">
+                    @foreach (var opt in ShortBreakOptions)
+                    {
+                        <option value="@opt">@opt min</option>
+                    }
+                </select>
+            </div>
+
+            <div class="setting-row">
+                <label for="long-break">Descanso Largo</label>
+                <select id="long-break" @bind="_longBreakDuration">
+                    @foreach (var opt in LongBreakOptions)
+                    {
+                        <option value="@opt">@opt min</option>
+                    }
+                </select>
+            </div>
+
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-primary" @onclick="HandleSave">Guardar</button>
+            <button class="btn-secondary" @onclick="HandleClose">Cancelar</button>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private static readonly int[] PomodoroDurationOptions = { 15, 20, 25, 30 };
+    private static readonly int[] ShortBreakOptions = { 3, 4, 5, 10 };
+    private static readonly int[] LongBreakOptions = { 10, 15, 20 };
+
+    private int _pomodoroDuration;
+    private int _shortBreakDuration;
+    private int _longBreakDuration;
+
+    protected override void OnParametersSet()
+    {
+        if (IsVisible)
+        {
+            _pomodoroDuration = TimerService.CurrentConfiguration.PomodoroDuration;
+            _shortBreakDuration = TimerService.CurrentConfiguration.ShortBreakDuration;
+            _longBreakDuration = TimerService.CurrentConfiguration.LongBreakDuration;
+        }
+    }
+
+    private async Task HandleSave()
+    {
+        var newConfig = new TimeConfiguration
+        {
+            PomodoroDuration = _pomodoroDuration,
+            ShortBreakDuration = _shortBreakDuration,
+            LongBreakDuration = _longBreakDuration,
+            PomodorosBeforeLongBreak = TimerService.CurrentConfiguration.PomodorosBeforeLongBreak
+        };
+
+        TimerService.UpdateConfiguration(newConfig);
+        await OnClose.InvokeAsync();
+    }
+
+    private async Task HandleClose()
+    {
+        await OnClose.InvokeAsync();
+    }
+}
