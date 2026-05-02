@@ -66,6 +66,7 @@ Route tasks to the appropriate subagent based on what needs to be done:
 - architect: Analyzes codebase and produces design plans (read-only)
 - backend-developer: Handles domain, application, and infrastructure layers
 - frontend-developer: Handles Blazor components, pages, and UI/UX
+- qa-engineer: Writes and runs unit/integration tests, reports coverage and failures
 
 | Task Type | Use Subagent |
 |-----------|--------------|
@@ -75,6 +76,7 @@ Route tasks to the appropriate subagent based on what needs to be done:
 | Unit Tests (Domain/Application) | **Backend Developer** |
 | Blazor Components, Pages, Layouts | **Frontend Developer** |
 | UI/UX, Modals, CSS | **Frontend Developer** |
+| QA Testing, Test Coverage, Test Failures | **QA Engineer** |
 | Mixed (Backend + Frontend) | Architect first → then invoke both subagents |
 
 **Architect must be invoked first for any non-trivial change.** It researches the codebase and produces a task plan. Once the plan is approved, route tasks to backend-developer and/or frontend-developer as specified.
@@ -93,6 +95,13 @@ Route tasks to the appropriate subagent based on what needs to be done:
 - File: `.agents/skills/blazor-expert/SKILL.md`
 - Handles: Web layer (Blazor components, pages, wwwroot)
 - Commands: `dotnet build`, `dotnet run --project PomodoroFocus.Web`
+
+### QA Engineer Skill
+- File: `.opencode/agents/qa-engineer.md`
+- Handles: Unit tests, integration tests, test coverage, failure analysis
+- Skills: NUnit 4.x, Moq, WebApplicationFactory, Playwright (suggest only)
+- Commands: `dotnet test`
+- Constraint: **Read-only on production code** — only tests and test config files
 
 ## Task Routing Examples
 - "Add new timer mode" → Backend (modify PomodoroSession, Service)
