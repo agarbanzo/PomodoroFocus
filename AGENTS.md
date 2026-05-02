@@ -87,12 +87,12 @@ Route tasks to the appropriate subagent based on what needs to be done:
 - Constraints: **Read-only** — never creates or edits files
 
 ### Backend Developer Skill
-- File: `.agents/skills/dotnet-core-expert/SKILL.md`
+- File: `.opencode/agents/backend-developer.md`
 - Handles: Domain layer, Application layer, Infrastructure
 - Commands: `dotnet build`, `dotnet test`
 
 ### Frontend Developer Skill
-- File: `.agents/skills/blazor-expert/SKILL.md`
+- File: `.opencode/agents/frontend-developer.md`
 - Handles: Web layer (Blazor components, pages, wwwroot)
 - Commands: `dotnet build`, `dotnet run --project PomodoroFocus.Web`
 
