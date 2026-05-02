@@ -13,10 +13,10 @@ public class PomodoroService : IPomodoroService, IDisposable
 {
     private readonly PomodoroSession _session;
     private readonly System.Timers.Timer _timer;
-    private TimeConfiguration _config;
+    private readonly ISessionConfigurationService _configService;
 
     /// <summary>
-    /// Gets the current state of the timer, which can be Ready, Running, Paused, Break, or Completed. 
+    /// Gets the current state of the timer, which can be Ready, Running, Paused, Break, or Completed.
     /// This property is used to track the lifecycle of the timer and control its behavior based on user interactions and session progress.
     /// </summary>
     public TimerState CurrentState => _session.State;
@@ -46,51 +46,55 @@ public class PomodoroService : IPomodoroService, IDisposable
     /// </summary>
     public event Action? OnSessionComplete;
 
-    /// <inheritdoc cref="IPomodoroService.CurrentConfiguration"/>
-    public TimeConfiguration CurrentConfiguration => _config;
-
     /// <summary>
-    /// Initializes a new instance of the <see cref="PomodoroService"/> class with an optional <see cref="TimeConfiguration"/> parameter.
+    /// Initializes a new instance of the <see cref="PomodoroService"/> class.
     /// </summary>
-    /// <param name="config"></param>
-    public PomodoroService(TimeConfiguration? config = null)
+    /// <param name="configService">The session configuration service to use for timer settings.</param>
+    public PomodoroService(ISessionConfigurationService configService)
     {
+        ArgumentNullException.ThrowIfNull(configService);
         _session = new PomodoroSession();
-        _config = config ?? new TimeConfiguration();
-        _timer = new System.Timers.Timer(1000); // 1 second interval.
+        _configService = configService;
+        _timer = new System.Timers.Timer(1000);
         _timer.Elapsed += TimerElapsed;
+        _configService.OnConfigurationChanged += OnConfigChanged;
     }
+
+    private void OnConfigChanged()
+    {
+        OnTimerTick?.Invoke();
+    }
+
+    private TimeConfiguration Config => _configService.CurrentConfiguration;
 
     /// <summary>
     /// Starts a new Pomodoro session with the configured duration for focused work.
     /// </summary>
     public void StartPomodoro()
     {
-        _session.Start(_config.PomodoroDuration);
+        _session.Start(Config.PomodoroDuration);
         _timer.Start();
     }
 
     /// <summary>
-    /// Starts a break session, determining whether it should be a short break or a long break 
+    /// Starts a break session, determining whether it should be a short break or a long break
     /// based on the number of completed Pomodoros and the configured thresholds.
     /// If starting a long break, resets the Pomodoro counter.
     /// </summary>
     public void StartBreak()
     {
-        // Determine break type: Long break after every N Pomodoros, otherwise short
         var breakType = _session.CompletedPomodoros > 0
-            && _session.CompletedPomodoros % _config.PomodorosBeforeLongBreak == 0
+            && _session.CompletedPomodoros % Config.PomodorosBeforeLongBreak == 0
             ? SessionType.LongBreak
             : SessionType.ShortBreak;
 
         var duration = breakType == SessionType.LongBreak
-            ? _config.LongBreakDuration
-            : _config.ShortBreakDuration;
+            ? Config.LongBreakDuration
+            : Config.ShortBreakDuration;
 
         _session.StartBreak(breakType, duration);
         _timer.Start();
 
-        // Reset counter after starting long break
         if (breakType == SessionType.LongBreak)
         {
             _session.ResetAfterLongBreak();
@@ -191,19 +195,7 @@ public class PomodoroService : IPomodoroService, IDisposable
     /// </summary>
     public void Dispose()
     {
+        _configService.OnConfigurationChanged -= OnConfigChanged;
         _timer?.Dispose();
-    }
-
-    /// <summary>
-    /// Updates the timer configuration. Only valid when the timer is not active.
-    /// </summary>
-    /// <param name="newConfiguration">The new configuration to apply.</param>
-    public void UpdateConfiguration(TimeConfiguration newConfiguration)
-    {
-        // Pre-condición: el timer debe estar en Ready o Completed
-        if (_session.State != TimerState.Ready && _session.State != TimerState.Completed)
-            return;
-
-        _config = newConfiguration;
     }
 }

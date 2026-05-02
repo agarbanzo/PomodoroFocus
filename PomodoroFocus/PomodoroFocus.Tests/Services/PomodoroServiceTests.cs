@@ -1,4 +1,5 @@
 ﻿using PomodoroFocus.Application.Services;
+using PomodoroFocus.Application.Interfaces;
 using PomodoroFocus.Domain.Enums;
 using PomodoroFocus.Domain.ValueObjects;
 
@@ -8,6 +9,7 @@ namespace PomodoroFocus.Tests.Services;
 public class PomodoroServiceTests
 {
     private PomodoroService _service = null!;
+    private ISessionConfigurationService _configService = null!;
     private TimeConfiguration _config = null!;
 
     [SetUp]
@@ -20,7 +22,8 @@ public class PomodoroServiceTests
             LongBreakDuration = 15,
             PomodorosBeforeLongBreak = 4
         };
-        _service = new PomodoroService(_config);
+        _configService = new SessionConfigurationService(_config);
+        _service = new PomodoroService(_configService);
     }
 
     [TearDown]
@@ -34,10 +37,9 @@ public class PomodoroServiceTests
     [Test]
     public void Constructor_WithDefaultConfig_ShouldInitializeCorrectly()
     {
-        // Arrange & Act
-        using var service = new PomodoroService();
+        var configService = new SessionConfigurationService();
+        using var service = new PomodoroService(configService);
 
-        // Assert
         Assert.Multiple(() =>
         {
             Assert.That(service.CurrentState, Is.EqualTo(TimerState.Ready));
@@ -438,26 +440,23 @@ public class PomodoroServiceTests
     [Test]
     public void OnSessionComplete_ShouldTriggerWhenSessionCompletes()
     {
-        // Arrange
         var eventTriggered = false;
 
-        // Use a very short duration for testing (1 second = almost instant)
         var shortConfig = new TimeConfiguration
         {
-            PomodoroDuration = 0, // 0 minutes = 0 seconds
+            PomodoroDuration = 0,
             ShortBreakDuration = 5,
             LongBreakDuration = 15,
             PomodorosBeforeLongBreak = 4
         };
 
-        using var shortService = new PomodoroService(shortConfig);
+        var configService = new SessionConfigurationService(shortConfig);
+        using var shortService = new PomodoroService(configService);
         shortService.OnSessionComplete += () => eventTriggered = true;
 
-        // Act
         shortService.StartPomodoro();
-        Thread.Sleep(1500); // Wait for tick and completion
+        Thread.Sleep(1500);
 
-        // Assert
         Assert.That(eventTriggered, Is.True);
     }
 

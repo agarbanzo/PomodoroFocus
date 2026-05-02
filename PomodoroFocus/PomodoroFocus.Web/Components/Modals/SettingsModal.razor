@@ -1,6 +1,6 @@
 ﻿@using PomodoroFocus.Domain.ValueObjects
 @using PomodoroFocus.Application.Interfaces
-@inject IPomodoroService TimerService
+@inject ISessionConfigurationService ConfigService
 
 <div class="modal-backdrop @(IsVisible ? "visible" : "")">
     <div class="modal-card">
@@ -67,9 +67,9 @@
     {
         if (IsVisible)
         {
-            _pomodoroDuration = TimerService.CurrentConfiguration.PomodoroDuration;
-            _shortBreakDuration = TimerService.CurrentConfiguration.ShortBreakDuration;
-            _longBreakDuration = TimerService.CurrentConfiguration.LongBreakDuration;
+            _pomodoroDuration = ConfigService.CurrentConfiguration.PomodoroDuration;
+            _shortBreakDuration = ConfigService.CurrentConfiguration.ShortBreakDuration;
+            _longBreakDuration = ConfigService.CurrentConfiguration.LongBreakDuration;
         }
     }
 
@@ -80,10 +80,10 @@
             PomodoroDuration = _pomodoroDuration,
             ShortBreakDuration = _shortBreakDuration,
             LongBreakDuration = _longBreakDuration,
-            PomodorosBeforeLongBreak = TimerService.CurrentConfiguration.PomodorosBeforeLongBreak
+            PomodorosBeforeLongBreak = ConfigService.CurrentConfiguration.PomodorosBeforeLongBreak
         };
 
-        TimerService.UpdateConfiguration(newConfig);
+        ConfigService.UpdateConfiguration(newConfig);
         await OnClose.InvokeAsync();
     }
 

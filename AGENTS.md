@@ -63,17 +63,26 @@ dotnet test
 ## Subagent Orchestration
 
 Route tasks to the appropriate subagent based on what needs to be done:
+- architect: Analyzes codebase and produces design plans (read-only)
 - backend-developer: Handles domain, application, and infrastructure layers
 - frontend-developer: Handles Blazor components, pages, and UI/UX
 
 | Task Type | Use Subagent |
 |-----------|--------------|
+| Architecture analysis, design planning | **Architect** |
 | Entities, Enums, ValueObjects | **Backend Developer** |
 | Services, Interfaces, Business Logic | **Backend Developer** |
 | Unit Tests (Domain/Application) | **Backend Developer** |
 | Blazor Components, Pages, Layouts | **Frontend Developer** |
 | UI/UX, Modals, CSS | **Frontend Developer** |
-| Mixed (Backend + Frontend) | Invoke both subagents |
+| Mixed (Backend + Frontend) | Architect first → then invoke both subagents |
+
+**Architect must be invoked first for any non-trivial change.** It researches the codebase and produces a task plan. Once the plan is approved, route tasks to backend-developer and/or frontend-developer as specified.
+
+### Architect
+- File: `.opencode/agents/architect.md`
+- Handles: Codebase research, impact analysis, execution planning
+- Constraints: **Read-only** — never creates or edits files
 
 ### Backend Developer Skill
 - File: `.agents/skills/dotnet-core-expert/SKILL.md`

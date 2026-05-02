@@ -18,9 +18,6 @@
             </div>
         </div>
     </div>
-    <!-- Modal de configuración UC-08 -->
-    <SettingsModal IsVisible="@ShowSettingsModal"
-                   OnClose="@(() => ShowSettingsModal = false)" />
     <div class="timer-controls-wrapper">
         <TimerControls State="@TimerService.CurrentState"
                        CurrentSessionType="@TimerService.CurrentSessionType"
@@ -53,10 +50,9 @@
         OnConfirmCompleted="HandleCompleted"
         OnConfirmNotCompleted="HandleNotCompleted" />
 
-    <!-- Modal: Configuración UC-08 (nuevo) -->
-    <SettingsModal
-        IsVisible="@ShowSettingsModal"
-        OnClose="@(() => ShowSettingsModal = false)" />
+    <!-- Modal: Configuración UC-08 -->
+    <SettingsModal IsVisible="@ShowSettingsModal"
+                   OnClose="@(() => ShowSettingsModal = false)" />
 </div>
 
 @using PomodoroFocus.Domain.Enums
