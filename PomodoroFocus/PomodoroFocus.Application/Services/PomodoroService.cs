@@ -12,8 +12,8 @@ namespace PomodoroFocus.Application.Services;
 public class PomodoroService : IPomodoroService, IDisposable
 {
     private readonly PomodoroSession _session;
-    private readonly TimeConfiguration _config;
     private readonly System.Timers.Timer _timer;
+    private TimeConfiguration _config;
 
     /// <summary>
     /// Gets the current state of the timer, which can be Ready, Running, Paused, Break, or Completed. 
@@ -45,6 +45,9 @@ public class PomodoroService : IPomodoroService, IDisposable
     /// Triggered when a session is completed, allowing subscribers to respond to the completion event, such as by updating the UI or starting a break.
     /// </summary>
     public event Action? OnSessionComplete;
+
+    /// <inheritdoc cref="IPomodoroService.CurrentConfiguration"/>
+    public TimeConfiguration CurrentConfiguration => _config;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PomodoroService"/> class with an optional <see cref="TimeConfiguration"/> parameter.
@@ -189,5 +192,18 @@ public class PomodoroService : IPomodoroService, IDisposable
     public void Dispose()
     {
         _timer?.Dispose();
+    }
+
+    /// <summary>
+    /// Updates the timer configuration. Only valid when the timer is not active.
+    /// </summary>
+    /// <param name="newConfiguration">The new configuration to apply.</param>
+    public void UpdateConfiguration(TimeConfiguration newConfiguration)
+    {
+        // Pre-condición: el timer debe estar en Ready o Completed
+        if (_session.State != TimerState.Ready && _session.State != TimerState.Completed)
+            return;
+
+        _config = newConfiguration;
     }
 }

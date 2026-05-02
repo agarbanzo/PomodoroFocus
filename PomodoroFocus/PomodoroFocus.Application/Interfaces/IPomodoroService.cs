@@ -1,4 +1,5 @@
 ﻿using PomodoroFocus.Domain.Enums;
+using PomodoroFocus.Domain.ValueObjects;
 
 namespace PomodoroFocus.Application.Interfaces;
 
@@ -29,6 +30,11 @@ public interface IPomodoroService
     /// as well as to determine when to take long breaks based on the configured threshold.
     /// </summary>
     int CompletedPomodoros { get; }
+
+    /// <summary>
+    /// Gets the current configuration settings for the Pomodoro timer, including durations for work sessions and breaks, as well as the number of Pomodoros before a long break.
+    /// </summary>
+    TimeConfiguration CurrentConfiguration { get; }
 
     /// <summary>
     /// Triggered on each timer tick (e.g., every second) to update the remaining time and check for session completion.
@@ -74,4 +80,10 @@ public interface IPomodoroService
     /// allowing the user to stop the timer and reset the remaining time without incrementing the count of completed Pomodoros.
     /// </summary>
     void CancelAsIncomplete();
+
+    /// <summary>
+    /// Updates the timer configuration with new settings for Pomodoro duration, break durations, and the number of Pomodoros before a long break.
+    /// </summary>
+    /// <param name="newConfiguration"></param>
+    void UpdateConfiguration(TimeConfiguration newConfiguration);
 }
