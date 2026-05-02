@@ -56,6 +56,10 @@ dotnet test
 - **Email**: andrey.garbanzo@gmail.com
 - Configured locally for this project (not global)
 
+### Git Workflow
+- **Commits**: Agent can create commits locally when requested
+- **Push**: User performs push manually (not done by agent)
+
 ## Subagent Orchestration
 
 Route tasks to the appropriate subagent based on what needs to be done:
