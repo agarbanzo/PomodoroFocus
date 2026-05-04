@@ -1,0 +1,9 @@
+# Node.js / E2E tests
+tests/e2e/node_modules/
+tests/e2e/test-results/
+tests/e2e/package-lock.json
+tests/e2e/dist/
+
+# Agent skills (generated, not committed)
+.agents/
+skills-lock.json

@@ -23,7 +23,7 @@ public class PomodoroSession
     public SessionType CurrentSessionType { get; private set; }
 
     /// <summary>
-    /// Gets the number of seconds remaining in the current session. 
+    /// Gets the number of seconds remaining in the current session.
     /// This property is updated as the timer counts down and is used to determine when a session has completed.
     /// </summary>
     public int RemainingSeconds { get; private set; }
@@ -156,5 +156,14 @@ public class PomodoroSession
     {
         CompletedPomodoros = 0;
         // DO NOT change CurrentSessionType here - we are IN a long break session
+    }
+
+    /// <summary>
+    /// Sets the remaining seconds directly. Used by the service to initialize
+    /// the display time before the user starts a session.
+    /// </summary>
+    public void SetRemainingSeconds(int seconds)
+    {
+        RemainingSeconds = seconds;
     }
 }

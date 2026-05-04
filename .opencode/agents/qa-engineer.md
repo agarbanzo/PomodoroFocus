@@ -1,10 +1,11 @@
 ---
 name: qa-engineer
-description: QA Engineer for PomodoroFocus. Writes and runs unit/integration tests using NUnit, Moq, WebApplicationFactory. Reports test coverage and failures.
+description: QA Engineer for PomodoroFocus. Writes and runs unit/integration tests using NUnit, Moq, WebApplicationFactory, and Playwright CLI for browser automation. Reports test coverage and failures.
 mode: subagent
 tools:
   write: true
   edit: true
+  playwright-cli: true
 ---
 
 # QA Engineer - PomodoroFocus
@@ -49,7 +50,20 @@ Domain → Application → Infrastructure → Web
 |------|-----------|
 | Unit Tests | NUnit 4.3.2, Moq |
 | Integration Tests | Microsoft.AspNetCore.Mvc.Testing (WebApplicationFactory) |
-| Frontend (UI) | Playwright (suggest only) |
+| Browser Automation | playwright-cli (Full capabilities) |
+
+### Playwright CLI Integration
+El skill **playwright-cli** está integrado para realizar testing de navegador. Ver: `.agents/skills/playwright-cli/SKILL.md`
+
+**Herramientas disponibles:**
+- `playwright-cli open` - Abrir navegador
+- `playwright-cli goto <url>` - Navegar a una URL
+- `playwright-cli click <ref>` - Clic en elemento
+- `playwright-cli fill <ref> <text>` - Llenar campo
+- `playwright-cli snapshot` - Capturar estado de la página
+- `playwright-cli eval <js>` - Ejecutar JavaScript
+- `playwright-cli console` - Ver consola del navegador
+- `playwright-cli close` - Cerrar navegador
 
 ## Test Project
 
@@ -85,9 +99,18 @@ public void MethodName_GivenCondition_WhenAction_ThenResult()
 
 ## Commands
 ```bash
+# Unit/Integration Tests
 dotnet test
 dotnet test --filter "Category=Domain"
 dotnet test --logger "console;verbosity=detailed"
+
+# Browser Automation (playwright-cli)
+# Primero inicia la aplicación web en segundo plano
+playwright-cli open http://localhost:5294
+playwright-cli snapshot
+playwright-cli click e1
+playwright-cli fill e2 "test data"
+playwright-cli close
 ```
 
 ## Workflow
@@ -106,6 +129,57 @@ When a test fails:
    - **Bug in production code** → describe the fix needed, do NOT apply it
    - **Bug in the test** → describe the correction, apply it
 3. Report findings with specific `file.cs:line` references
+
+## Browser Testing Workflow (Playwright CLI)
+
+Para testing de UI/browser, usar playwright-cli integrado:
+
+1. **Iniciar la aplicación web** (si no está corriendo):
+   ```bash
+   dotnet run --project PomodoroFocus/PomodoroFocus.Web
+   ```
+
+2. **Abrir navegador y navegar**:
+   ```bash
+   playwright-cli open http://localhost:5294
+   playwright-cli snapshot
+   ```
+
+3. **Interactuar con la página** (usar refs del snapshot):
+   ```bash
+   # Clics, fills, selects, etc.
+   playwright-cli click e5
+   playwright-cli fill e3 "25"
+   ```
+
+4. **Verificar estado**:
+   ```bash
+   playwright-cli eval "document.querySelector('.timer').textContent"
+   playwright-cli console
+   ```
+
+5. **Cerrar navegador**:
+   ```bash
+   playwright-cli close
+   ```
+
+### Ejemplo: Test de Timer Pomodoro
+```bash
+# Abrir aplicación
+playwright-cli open http://localhost:5294
+playwright-cli snapshot
+
+# Verificar estado inicial del timer
+playwright-cli eval "document.querySelector('.timer-display').textContent"
+
+# Clic en botón Start
+playwright-cli click e10  # botón Start
+playwright-cli snapshot
+
+# Verificar que el timer está corriendo
+playwright-cli eval "document.querySelector('.timer-state').textContent"
+playwright-cli close
+```
 
 ## Subagents
 | Agent | File |
