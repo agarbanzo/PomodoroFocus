@@ -58,10 +58,23 @@ public class PomodoroService : IPomodoroService, IDisposable
         _timer = new System.Timers.Timer(1000);
         _timer.Elapsed += TimerElapsed;
         _configService.OnConfigurationChanged += OnConfigChanged;
+
+        // Initialize RemainingSeconds to pomodoro duration when in Ready state
+        // This ensures the timer displays the configured duration (e.g., 25:00) on initial load
+        if (_session.State == TimerState.Ready)
+        {
+            _session.SetRemainingSeconds(Config.PomodoroDuration * 60);
+        }
     }
 
     private void OnConfigChanged()
     {
+        // When configuration changes while timer is in Ready state, update RemainingSeconds
+        // to reflect the new PomodoroDuration so the display shows the correct time
+        if (_session.State == TimerState.Ready)
+        {
+            _session.SetRemainingSeconds(Config.PomodoroDuration * 60);
+        }
         OnTimerTick?.Invoke();
     }
 

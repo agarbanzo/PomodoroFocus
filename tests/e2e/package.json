@@ -1,0 +1,17 @@
+{
+  "name": "pomodoro-focus-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "E2E tests for PomodoroFocus using Playwright",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "@types/node": "^25.6.0",
+    "typescript": "^5.7.0"
+  }
+}
