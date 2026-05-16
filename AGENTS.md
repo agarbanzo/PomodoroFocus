@@ -66,6 +66,7 @@ dotnet test
 
 - architect: Analyzes codebase and produces design plans (read-only)
 - backend-developer: Handles domain, application, and infrastructure layers
+- devops: Automates CI/CD pipelines, GitHub Actions, GitHub Pages deployment
 - frontend-developer: Handles Blazor components, pages, and UI/UX
 - qa-engineer: Writes and runs unit/integration tests, reports coverage and failures
 
@@ -75,6 +76,7 @@ dotnet test
 | Entities, Enums, ValueObjects | **Backend Developer** |
 | Services, Interfaces, Business Logic | **Backend Developer** |
 | Unit Tests (Domain/Application) | **Backend Developer** |
+| CI/CD, Deploy Pipelines | **DevOps** |
 | Blazor Components, Pages, Layouts | **Frontend Developer** |
 | UI/UX, Modals, CSS | **Frontend Developer** |
 | QA Testing, Test Coverage, Test Failures | **QA Engineer** |
@@ -86,6 +88,11 @@ dotnet test
 - File: `.opencode/agents/architect.md`
 - Handles: Codebase research, impact analysis, execution planning
 - Constraints: **Read-only** — never creates or edits files
+
+### DevOps Skill
+- File: `.opencode/agents/devops.md`
+- Handles: CI/CD pipelines, GitHub Actions, GitHub Pages deployment
+- Commands: `dotnet build`, `dotnet test`
 
 ### Backend Developer Skill
 - File: `.opencode/agents/backend-developer.md`
