@@ -168,6 +168,8 @@ public class PomodoroService : IPomodoroService, IDisposable
         else
         {
             _session.CompleteBreak(); // Reset Break to Ready
+            // FIX: Reset timer to Pomodoro duration when returning from break
+            _session.SetRemainingSeconds(Config.PomodoroDuration * 60);
         }
     }
 
@@ -193,6 +195,8 @@ public class PomodoroService : IPomodoroService, IDisposable
             else
             {
                 _session.CompleteBreak();
+                // FIX: Reset timer to Pomodoro duration when break completes
+                _session.SetRemainingSeconds(Config.PomodoroDuration * 60);
             }
 
             OnSessionComplete?.Invoke();

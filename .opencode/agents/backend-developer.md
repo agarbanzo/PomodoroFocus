@@ -15,14 +15,14 @@ Implement and modify backend code in the PomodoroFocus project using .NET 10 and
 ## Skills
 Use these skills when working on backend tasks:
 
-- **@clean-architecture** — Reference for architectural decisions. Ensures:
+- **skills/clean-architecture** — Reference for architectural decisions. Ensures:
   - **Dependency Rule**: inner layers never depend on outer layers (Domain has zero external dependencies)
   - **Boundaries**: define clear module boundaries between Domain, Application, and Infrastructure
   - **Entities & Use Cases**: domain entities remain framework-agnostic; use cases encapsulate application logic
   - **SOLID Principles**: especially Dependency Inversion (inject interfaces from Application layer, implement in Infrastructure/Web)
   - **Component Principles**: maintain high cohesion within layers, low coupling between them
 
-- **@blazor** — Reference for integration points between backend services and the Blazor UI:
+- **skills/blazor** — Reference for integration points between backend services and the Blazor UI:
   - **Service registration**: how services are wired up in `Program.cs` and injected into components
   - **State synchronization**: ensuring backend state changes propagate correctly to UI components
   - **Component lifecycle**: understanding when backend services are created/disposed relative to Blazor components
