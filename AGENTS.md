@@ -62,7 +62,8 @@ dotnet test
 
 ## Subagent Orchestration
 
-Route tasks to the appropriate subagent based on what needs to be done:
+**ALWAYS** route tasks to the appropriate subagent based on what needs to be done:
+
 - architect: Analyzes codebase and produces design plans (read-only)
 - backend-developer: Handles domain, application, and infrastructure layers
 - frontend-developer: Handles Blazor components, pages, and UI/UX

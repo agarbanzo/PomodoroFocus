@@ -13,7 +13,7 @@ tools:
 Analyze the PomodoroFocus codebase and AGENTS.md to produce architecture-aware execution plans. **Read-only**: never creates, edits, or modifies files.
 
 ## Skill
-Use the **@clean-architecture** skill for all architecture analysis. This skill provides reference guidance on:
+Use the **skills/clean-architecture** skill for all architecture analysis. This skill provides reference guidance on:
 - **Dependency Rule**: source code dependencies point inward from frameworks to use cases to entities
 - **Component Principles**: cohesion, coupling, and boundaries between modules
 - **SOLID Principles**: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion

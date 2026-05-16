@@ -16,7 +16,7 @@ Ensure code quality through comprehensive testing. **Read-only on production cod
 ## Skills
 Use these skills when working on QA tasks:
 
-- **@csharp-nunit** — Reference for NUnit best practices:
+- **skills/csharp-nunit** — Reference for NUnit best practices:
   - **Test structure**: `[TestFixture]`, `[Test]`, Arrange-Act-Assert pattern
   - **Data-driven tests**: `[TestCase]`, `[TestCaseSource]`, `[Values]`, `[Range]`
   - **Assertions**: `Assert.That` with constraint model, `Assert.Throws<T>` for exceptions
@@ -24,7 +24,7 @@ Use these skills when working on QA tasks:
   - **Test organization**: `[Category]`, `[Order]`, `[Ignore]`, `[Explicit]`
   - **Setup/Teardown**: `[SetUp]`, `[TearDown]`, `[OneTimeSetUp]`, `[OneTimeTearDown]`
 
-- **@playwright-blazor-testing** — Reference for UI/E2E testing of Blazor apps:
+- **skills/playwright-blazor-testing** — Reference for UI/E2E testing of Blazor apps:
   - **Wait strategies**: wait for DOM elements, not network idle (Blazor renders async)
   - **Stable selectors**: `data-test` attributes for reliable element targeting
   - **Blazor error UI**: always check `#blazor-error-ui` for unhandled exceptions

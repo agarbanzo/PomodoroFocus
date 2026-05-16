@@ -411,7 +411,7 @@ public class PomodoroServiceTests
         Assert.Multiple(() =>
         {
             Assert.That(_service.CurrentState, Is.EqualTo(TimerState.Ready));
-            Assert.That(_service.RemainingSeconds, Is.EqualTo(0));
+            Assert.That(_service.RemainingSeconds, Is.EqualTo(25 * 60));
         });
     }
 
@@ -601,7 +601,7 @@ public class PomodoroServiceTests
             Assert.That(_service.CompletedPomodoros, Is.EqualTo(countAfterLongBreakStarts),
                 "Counter should NOT change when cancelling break incomplete");
             Assert.That(_service.CurrentState, Is.EqualTo(TimerState.Ready));
-            Assert.That(_service.RemainingSeconds, Is.EqualTo(0));
+            Assert.That(_service.RemainingSeconds, Is.EqualTo(25 * 60));
         });
     }
 

@@ -15,13 +15,13 @@ Implement and modify frontend code in the PomodoroFocus project using Blazor Web
 ## Skills
 Use these skills when working on frontend tasks:
 
-- **@blazor** — Reference for Blazor-specific patterns and best practices:
+- **skills/blazor** — Reference for Blazor-specific patterns and best practices:
   - **Component lifecycle**: `OnInitialized`, `OnParametersSet`, `OnAfterRender`, `Dispose`
   - **State management**: how to manage component state, cascading values, and event handling
   - **Performance optimization**: `OwningComponentBase`, lazy loading, render mode considerations
   - **JS interop**: when and how to call JavaScript from Blazor components
 
-- **@ui-design** — Reference for visual design and UX decisions:
+- **skills/ui-design** — Reference for visual design and UX decisions:
   - **Layout and composition**: spacing, hierarchy, visual balance
   - **Color and typography**: consistent theme, accessible contrast
   - **Component styling**: scoped CSS patterns, responsive design
