@@ -55,17 +55,7 @@ jobs:
 
       - name: Debug dotnet route mappings
         run: |
-          python3 -c "
-import json, sys
-with open('release/PomodoroFocus.Web.staticwebassets.endpoints.json') as f:
-    data = json.load(f)
-for ep in data.get('Endpoints', []):
-    r = ep.get('Route','')
-    a = ep.get('AssetFile','')
-    if '_framework' in r or 'dotnet' in r.lower():
-        marker = ' *' if r != a else ''
-        print(f'{r} -> {a}{marker}')
-"
+          jq -r '.Endpoints[] | select(.Route | test("_framework")) | select(.Route != .AssetFile) | "\(.Route) -> \(.AssetFile)"' release/PomodoroFocus.Web.staticwebassets.endpoints.json
 
       - name: Prepare static assets for GitHub Pages
         run: |
