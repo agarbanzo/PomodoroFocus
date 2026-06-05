@@ -53,6 +53,12 @@ jobs:
         run: dotnet publish PomodoroFocus.Web/PomodoroFocus.Web.csproj -c Release -o ../release -p:CompressionEnabled=false
         working-directory: PomodoroFocus
 
+      - name: List publish output (debug)
+        run: |
+          echo "=== release/ ===" && ls release/
+          echo "=== release/wwwroot/ ===" && ls release/wwwroot/
+          echo "=== release/wwwroot/_framework/ ===" && ls release/wwwroot/_framework/ | head -30
+
       - name: Rewrite base href and add SPA fallback for GitHub Pages
         run: |
           $repoName = "${{ github.event.repository.name }}"
