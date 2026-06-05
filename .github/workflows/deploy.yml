@@ -50,7 +50,7 @@ jobs:
         working-directory: PomodoroFocus
 
       - name: Publish Blazor WASM
-        run: dotnet publish PomodoroFocus.Web/PomodoroFocus.Web.csproj -c Release -o ../release --no-build -p:CompressionEnabled=false
+        run: dotnet publish PomodoroFocus.Web/PomodoroFocus.Web.csproj -c Release -o ../release -p:CompressionEnabled=false
         working-directory: PomodoroFocus
 
       - name: Rewrite base href and add SPA fallback for GitHub Pages
