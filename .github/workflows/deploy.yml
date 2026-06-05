@@ -53,39 +53,22 @@ jobs:
         run: dotnet publish PomodoroFocus.Web/PomodoroFocus.Web.csproj -c Release -o ../release -p:CompressionEnabled=false
         working-directory: PomodoroFocus
 
-      - name: Debug dotnet route mappings
-        run: |
-          jq -r '.Endpoints[] | select(.Route | test("_framework")) | select(.Route != .AssetFile) | "\(.Route) -> \(.AssetFile)"' release/PomodoroFocus.Web.staticwebassets.endpoints.json
-
       - name: Prepare static assets for GitHub Pages
         run: |
-          FW=release/wwwroot/_framework
+          JSON=release/PomodoroFocus.Web.staticwebassets.endpoints.json
 
-          # dotnet.js vive en la raíz del publish en .NET 10; Blazor lo busca en _framework/
-          cp release/dotnet.js "$FW/dotnet.js"
-
-          # En .NET 10 los archivos de runtime están fingerprinted con el hash dentro del nombre.
-          # GitHub Pages no puede hacer URL rewriting, así que creamos copias canónicas.
-          # dotnet.boot.js  → dotnet.{hash}.js   (excluir native y runtime)
-          BOOT=$(ls "$FW"/dotnet.*.js 2>/dev/null | grep -vE '(native|runtime)' | head -1)
-          [ -n "$BOOT" ] && cp "$BOOT" "$FW/dotnet.boot.js" && echo "dotnet.boot.js <- $(basename $BOOT)"
-
-          # dotnet.native.js  → dotnet.native.{hash}.js
-          NATIVE_JS=$(ls "$FW"/dotnet.native.*.js 2>/dev/null | head -1)
-          [ -n "$NATIVE_JS" ] && cp "$NATIVE_JS" "$FW/dotnet.native.js" && echo "dotnet.native.js <- $(basename $NATIVE_JS)"
-
-          # dotnet.runtime.js  → dotnet.runtime.{hash}.js
-          RUNTIME_JS=$(ls "$FW"/dotnet.runtime.*.js 2>/dev/null | head -1)
-          [ -n "$RUNTIME_JS" ] && cp "$RUNTIME_JS" "$FW/dotnet.runtime.js" && echo "dotnet.runtime.js <- $(basename $RUNTIME_JS)"
-
-          # dotnet.native.wasm  → dotnet.native.{hash}.wasm
-          NATIVE_WASM=$(ls "$FW"/dotnet.native.*.wasm 2>/dev/null | head -1)
-          [ -n "$NATIVE_WASM" ] && cp "$NATIVE_WASM" "$FW/dotnet.native.wasm" && echo "dotnet.native.wasm <- $(basename $NATIVE_WASM)"
-
-          # ICU data  → {name}.{hash}.dat  a  {name}.dat
-          for DAT in "$FW"/icudt_*.dat; do
-            CANONICAL=$(echo "$DAT" | sed 's/\.[a-z0-9]\{8,12\}\.dat$/.dat/')
-            [ "$DAT" != "$CANONICAL" ] && cp "$DAT" "$CANONICAL" && echo "$(basename $CANONICAL) <- $(basename $DAT)"
+          # GitHub Pages es estático y no puede hacer URL rewriting.
+          # El servidor resolvería las URLs canónicas a los archivos fingerprinted leyendo
+          # el JSON; aquí creamos físicamente las copias canónicas.
+          jq -r '.Endpoints[] | select(.Route != .AssetFile) | "\(.Route) \(.AssetFile)"' "$JSON" |
+          while IFS=' ' read -r route asset; do
+            src="release/wwwroot/$asset"
+            dst="release/wwwroot/$route"
+            if [ -f "$src" ] && [ ! -f "$dst" ]; then
+              mkdir -p "$(dirname "$dst")"
+              cp "$src" "$dst"
+              echo "  $asset -> $route"
+            fi
           done
 
           # Bootstrap no fue incluido en el proyecto
