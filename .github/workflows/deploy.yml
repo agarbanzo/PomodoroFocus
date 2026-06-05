@@ -53,26 +53,33 @@ jobs:
         run: dotnet publish PomodoroFocus.Web/PomodoroFocus.Web.csproj -c Release -o ../release -p:CompressionEnabled=false
         working-directory: PomodoroFocus
 
-      - name: Debug publish output
-        run: |
-          echo "=== release/ root ===" && ls -la release/
-          echo "=== _framework/ ALL files ===" && ls -la release/wwwroot/_framework/
-          echo "=== staticwebassets.endpoints.json ===" && cat release/PomodoroFocus.Web.staticwebassets.endpoints.json
-
       - name: Prepare static assets for GitHub Pages
         run: |
-          # dotnet.js lives at the publish root in .NET 10, Blazor expects it in _framework/
+          # dotnet.js vive en la raíz del publish en .NET 10; Blazor lo busca en _framework/
           cp release/dotnet.js release/wwwroot/_framework/dotnet.js
 
-          # dotnet.boot.js and dotnet.native.wasm are fingerprinted; create canonical copies
-          # so dotnet.js can resolve them without server-side URL rewriting
-          BOOT_JS=$(find release/wwwroot/_framework -name 'dotnet.boot*.js' | head -1)
-          [ -n "$BOOT_JS" ] && cp "$BOOT_JS" release/wwwroot/_framework/dotnet.boot.js
+          # Crear copias canónicas de todos los assets fingerprinted usando el mapa de endpoints.
+          # GitHub Pages es estático y no puede hacer URL rewriting; el servidor lo haría
+          # leyendo staticwebassets.endpoints.json, pero aquí debemos crear los archivos físicos.
+          python3 - <<'EOF'
+          import json, os, shutil
+          with open('release/PomodoroFocus.Web.staticwebassets.endpoints.json') as f:
+              data = json.load(f)
+          wwwroot = 'release/wwwroot'
+          for ep in data.get('Endpoints', []):
+              route = ep.get('Route', '').lstrip('/')
+              asset = ep.get('AssetFile', '').lstrip('/')
+              if route == asset:
+                  continue
+              src = os.path.join(wwwroot, asset)
+              dst = os.path.join(wwwroot, route)
+              if os.path.exists(src) and not os.path.exists(dst):
+                  os.makedirs(os.path.dirname(dst), exist_ok=True)
+                  shutil.copy2(src, dst)
+                  print(f'  {asset} -> {route}')
+          EOF
 
-          NATIVE_WASM=$(find release/wwwroot/_framework -name 'dotnet.native*.wasm' | head -1)
-          [ -n "$NATIVE_WASM" ] && cp "$NATIVE_WASM" release/wwwroot/_framework/dotnet.native.wasm
-
-          # Bootstrap was never committed to the project
+          # Bootstrap no fue incluido en el proyecto
           mkdir -p release/wwwroot/css/bootstrap
           curl -sL "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" \
             -o release/wwwroot/css/bootstrap/bootstrap.min.css
