@@ -47,7 +47,7 @@ jobs:
         run: dotnet test --no-build --configuration Release
 
       - name: Publish Blazor WASM
-        run: dotnet publish PomodoroFocus/PomodoroFocus.Web/PomodoroFocus.Web.csproj -c Release -o release/wwwroot --no-build
+        run: dotnet publish PomodoroFocus/PomodoroFocus.Web/PomodoroFocus.Web.csproj -c Release -o release --no-build
 
       - name: Rewrite base href and add SPA fallback for GitHub Pages
         run: |
