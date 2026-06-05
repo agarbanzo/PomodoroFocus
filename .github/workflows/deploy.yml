@@ -53,6 +53,12 @@ jobs:
         run: dotnet publish PomodoroFocus.Web/PomodoroFocus.Web.csproj -c Release -o ../release -p:CompressionEnabled=false
         working-directory: PomodoroFocus
 
+      - name: Debug publish output
+        run: |
+          echo "=== release/ root ===" && ls -la release/
+          echo "=== _framework/ ALL files ===" && ls -la release/wwwroot/_framework/
+          echo "=== staticwebassets.endpoints.json ===" && cat release/PomodoroFocus.Web.staticwebassets.endpoints.json
+
       - name: Prepare static assets for GitHub Pages
         run: |
           # dotnet.js lives at the publish root in .NET 10, Blazor expects it in _framework/
