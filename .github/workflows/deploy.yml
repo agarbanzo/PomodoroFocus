@@ -53,6 +53,20 @@ jobs:
         run: dotnet publish PomodoroFocus.Web/PomodoroFocus.Web.csproj -c Release -o ../release -p:CompressionEnabled=false
         working-directory: PomodoroFocus
 
+      - name: Debug dotnet route mappings
+        run: |
+          python3 -c "
+import json, sys
+with open('release/PomodoroFocus.Web.staticwebassets.endpoints.json') as f:
+    data = json.load(f)
+for ep in data.get('Endpoints', []):
+    r = ep.get('Route','')
+    a = ep.get('AssetFile','')
+    if '_framework' in r or 'dotnet' in r.lower():
+        marker = ' *' if r != a else ''
+        print(f'{r} -> {a}{marker}')
+"
+
       - name: Prepare static assets for GitHub Pages
         run: |
           FW=release/wwwroot/_framework
