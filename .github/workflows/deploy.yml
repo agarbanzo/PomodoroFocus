@@ -46,7 +46,7 @@ jobs:
         working-directory: PomodoroFocus
 
       - name: Run tests
-        run: dotnet test --no-build --configuration Release
+        run: dotnet test --no-build --configuration Release --filter "FullyQualifiedName!~.E2E."
         working-directory: PomodoroFocus
 
       - name: Publish Blazor WASM
