@@ -39,15 +39,19 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore
+        working-directory: PomodoroFocus
 
       - name: Build
         run: dotnet build --no-restore --configuration Release
+        working-directory: PomodoroFocus
 
       - name: Run tests
         run: dotnet test --no-build --configuration Release
+        working-directory: PomodoroFocus
 
       - name: Publish Blazor WASM
-        run: dotnet publish PomodoroFocus/PomodoroFocus.Web/PomodoroFocus.Web.csproj -c Release -o release --no-build
+        run: dotnet publish PomodoroFocus.Web/PomodoroFocus.Web.csproj -c Release -o ../release --no-build
+        working-directory: PomodoroFocus
 
       - name: Rewrite base href and add SPA fallback for GitHub Pages
         run: |
